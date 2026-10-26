@@ -1,0 +1,70 @@
+name: ofxEmbreeRayTracing
+
+on:
+  push:
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+  pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Builds the examples against openFrameworks master and runs example_tests.
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      OF: ${{ github.workspace }}/of
+    steps:
+      - name: openFrameworks master
+        run: git clone --depth 1 https://github.com/openframeworks/openFrameworks of
+
+      # straight into of/addons so the examples' ../../.. reaches the OF root
+      - uses: actions/checkout@v6
+        with:
+          path: of/addons/ofxEmbreeRayTracing
+
+      - name: Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get -o Acquire::Retries=5 update -qq
+          sudo "$OF/scripts/linux/ubuntu/install_dependencies.sh" -y > deps.log 2>&1 || { tail -30 deps.log; exit 1; }
+          "$OF/scripts/linux/download_libs.sh"
+
+      - name: Libraries (macOS)
+        if: runner.os == 'macOS'
+        run: "$OF/scripts/osx/download_libs.sh"
+
+      - name: openFrameworks core
+        run: make -C "$OF/libs/openFrameworksCompiled/project" Release -j"$(getconf _NPROCESSORS_ONLN)"
+
+      - name: Build the examples
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == Linux ]]; then T="$OF/scripts/templates/linux"; else T="$OF/scripts/templates/osx"; fi
+          cd "$OF/addons/ofxEmbreeRayTracing"
+          for example in example_tests example_picking example_cornellbox; do
+            echo "::group::$example"
+            cp "$T/Makefile" "$T/config.make" "$example/"
+            make -C "$example" Release -j"$(getconf _NPROCESSORS_ONLN)"
+            echo "::endgroup::"
+          done
+
+      - name: Run example_tests
+        shell: bash
+        run: |
+          cd "$OF/addons/ofxEmbreeRayTracing/example_tests/bin"
+          if [[ "$RUNNER_OS" == macOS ]]; then ./example_tests.app/Contents/MacOS/example_tests; else ./example_tests; fi

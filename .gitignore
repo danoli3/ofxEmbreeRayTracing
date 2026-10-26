@@ -1,0 +1,12 @@
+# openFrameworks projects
+*/Makefile
+*/config.make
+*/obj/
+*/bin/*
+!*/bin/data/
+*/bin/data/*
+!*/bin/data/.gitkeep
+*.xcodeproj/
+*.app/
+.DS_Store
+*/openFrameworks-Info.plist

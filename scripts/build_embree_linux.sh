@@ -2,7 +2,8 @@
 # Builds libs/embree/lib/linux/64 (x86_64), linux/arm64 and linux/aarch64
 # (64-bit ARM; one build for both: generic and Raspberry Pi) in
 # Docker: Embree static libraries, -fPIC (apps link as PIE), with Embree's
-# internal task system (no TBB). Built on Ubuntu 22.04 (glibc 2.35).
+# internal task system (no TBB), merged into one libembree.a. Built on Ubuntu
+# 22.04 (glibc 2.35).
 #
 #   scripts/build_embree_linux.sh            # both
 #   scripts/build_embree_linux.sh arm64      # or amd64
@@ -30,9 +31,13 @@ for arch in ${*:-amd64 arm64}; do
 			-DCMAKE_INSTALL_PREFIX=/tmp/install -DCMAKE_INSTALL_LIBDIR=lib > /tmp/cmake.log 2>&1 || { tail -20 /tmp/cmake.log; exit 1; }
 		cmake --build build -j\$(nproc) > /tmp/build.log 2>&1 || { grep -m10 error /tmp/build.log; exit 1; }
 		cmake --install build > /dev/null
+		# one archive: the core and the ISA library refer to each other
+		cd /tmp/install/lib
+		{ echo 'create libembree.a'; for f in libembree4.a libembree_*.a libsys.a libmath.a libsimd.a liblexers.a libtasking.a; do [ -f \$f ] && echo \"addlib \$f\"; done; echo save; echo end; } | ar -M
+		ranlib libembree.a
 		for dir in $dirs; do
 			rm -rf /addon/libs/embree/lib/\$dir && mkdir -p /addon/libs/embree/lib/\$dir
-			cp /tmp/install/lib/*.a /addon/libs/embree/lib/\$dir/
+			cp libembree.a /addon/libs/embree/lib/\$dir/
 		done
 		echo '  link interface:' \$(grep -h -o 'INTERFACE_LINK_LIBRARIES \"[^\"]*\"' /tmp/install/lib/cmake/embree-*/embree-targets.cmake | head -3)
 		ls -la /addon/libs/embree/lib/${dirs%% *} | awk 'NR>1{print \"  \", \$5, \$9}'

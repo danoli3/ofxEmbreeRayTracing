@@ -80,7 +80,7 @@ scripts in `scripts/`:
 | Folder | Code path | Script |
 |---|---|---|
 | `lib/osx` | universal: arm64 NEON, x86_64 AVX2 (Intel Macs from 2013) | `scripts/build_embree_macos.sh` (Xcode, CMake, Ninja) |
-| `lib/linux/64` | x86_64 SSE2 and AVX2, picked at runtime; `-fPIC` | `scripts/build_embree_linux.sh` (Docker) |
+| `lib/linux/64` | x86_64 SSE2 and AVX2, picked at runtime; `-fPIC`, one `libembree.a` | `scripts/build_embree_linux.sh` (Docker) |
 | `lib/linux/arm64`, `lib/linux/aarch64` | 64-bit ARM NEON: ARM desktops / servers, and 64-bit Raspberry Pi OS (the same build); `-fPIC` | `scripts/build_embree_linux.sh arm64` |
 
 The Linux folders use openFrameworks' `lib/linux/<arch>` layout (0.12.2 and later). Embree's static

@@ -21,25 +21,37 @@ osx:
 	ADDON_LIBS += libs/embree/lib/osx/liblexers.a
 	ADDON_LIBS += libs/embree/lib/osx/libtasking.a
 
-# Linux: static, -fPIC, no TBB (scripts/build_embree_linux.sh), in Embree's link
-# order; the GNU linker reads archives in order, so the ISA library is followed
-# by libembree4.a again for the core symbols it uses
-linux64:
-	ADDON_LIBS = libs/embree/lib/linux64/libembree4.a
-	ADDON_LIBS += libs/embree/lib/linux64/libembree_avx2.a
-	ADDON_LIBS += libs/embree/lib/linux64/libembree4.a
-	ADDON_LIBS += libs/embree/lib/linux64/libsys.a
-	ADDON_LIBS += libs/embree/lib/linux64/libmath.a
-	ADDON_LIBS += libs/embree/lib/linux64/libsimd.a
-	ADDON_LIBS += libs/embree/lib/linux64/liblexers.a
-	ADDON_LIBS += libs/embree/lib/linux64/libtasking.a
+# Linux (openFrameworks 0.12.2+ layout: lib/linux/<arch>): static, -fPIC, no TBB
+# (scripts/build_embree_linux.sh), in Embree's link order; the GNU linker reads
+# archives in order, so the ISA library is followed by libembree4.a again for
+# the core symbols it uses
+linux/64:
+	ADDON_LIBS = libs/embree/lib/linux/64/libembree4.a
+	ADDON_LIBS += libs/embree/lib/linux/64/libembree_avx2.a
+	ADDON_LIBS += libs/embree/lib/linux/64/libembree4.a
+	ADDON_LIBS += libs/embree/lib/linux/64/libsys.a
+	ADDON_LIBS += libs/embree/lib/linux/64/libmath.a
+	ADDON_LIBS += libs/embree/lib/linux/64/libsimd.a
+	ADDON_LIBS += libs/embree/lib/linux/64/liblexers.a
+	ADDON_LIBS += libs/embree/lib/linux/64/libtasking.a
 	ADDON_LDFLAGS = -lpthread -ldl
 
-linuxaarch64:
-	ADDON_LIBS = libs/embree/lib/linuxaarch64/libembree4.a
-	ADDON_LIBS += libs/embree/lib/linuxaarch64/libsys.a
-	ADDON_LIBS += libs/embree/lib/linuxaarch64/libmath.a
-	ADDON_LIBS += libs/embree/lib/linuxaarch64/libsimd.a
-	ADDON_LIBS += libs/embree/lib/linuxaarch64/liblexers.a
-	ADDON_LIBS += libs/embree/lib/linuxaarch64/libtasking.a
+# 64-bit ARM: generic (servers, desktops, Jetson)
+linux/arm64:
+	ADDON_LIBS = libs/embree/lib/linux/arm64/libembree4.a
+	ADDON_LIBS += libs/embree/lib/linux/arm64/libsys.a
+	ADDON_LIBS += libs/embree/lib/linux/arm64/libmath.a
+	ADDON_LIBS += libs/embree/lib/linux/arm64/libsimd.a
+	ADDON_LIBS += libs/embree/lib/linux/arm64/liblexers.a
+	ADDON_LIBS += libs/embree/lib/linux/arm64/libtasking.a
+	ADDON_LDFLAGS = -lpthread -ldl
+
+# 64-bit Raspberry Pi OS (the same build)
+linux/aarch64:
+	ADDON_LIBS = libs/embree/lib/linux/aarch64/libembree4.a
+	ADDON_LIBS += libs/embree/lib/linux/aarch64/libsys.a
+	ADDON_LIBS += libs/embree/lib/linux/aarch64/libmath.a
+	ADDON_LIBS += libs/embree/lib/linux/aarch64/libsimd.a
+	ADDON_LIBS += libs/embree/lib/linux/aarch64/liblexers.a
+	ADDON_LIBS += libs/embree/lib/linux/aarch64/libtasking.a
 	ADDON_LDFLAGS = -lpthread -ldl

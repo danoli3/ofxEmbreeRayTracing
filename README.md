@@ -74,18 +74,21 @@ the Cornell box (shadow and ambient occlusion rays included).
 
 ## Embree
 
-`libs/embree` is Embree **4.4.1**, static, with Embree's internal task system (no TBB), built by the
-scripts in `scripts/`:
+`libs/embree` is Embree **4.4.1**, static, with Embree's internal task system (no TBB), one `libembree.a`
+per platform, built by the scripts in `scripts/`:
 
-| Folder | Code path | Script |
+| Folder | Platform, code path | Script |
 |---|---|---|
-| `lib/osx` | universal: arm64 NEON, x86_64 AVX2 (Intel Macs from 2013) | `scripts/build_embree_macos.sh` (Xcode, CMake, Ninja) |
-| `lib/linux/64` | x86_64 SSE2 and AVX2, picked at runtime; `-fPIC`, one `libembree.a` | `scripts/build_embree_linux.sh` (Docker) |
-| `lib/linux/arm64`, `lib/linux/aarch64` | 64-bit ARM NEON: ARM desktops / servers, and 64-bit Raspberry Pi OS (the same build); `-fPIC` | `scripts/build_embree_linux.sh arm64` |
+| `lib/macos/embree.xcframework` | macOS 10.15+ universal: arm64 NEON, x86_64 AVX2 (Intel Macs from 2013)<br>iOS 15+: arm64 NEON<br>iOS Simulator: arm64 NEON, x86_64 AVX2 | `scripts/build_embree_apple.sh` (Xcode, CMake, Ninja) |
+| `lib/linux/64` | x86_64: SSE2, AVX and AVX2, picked at runtime | `scripts/build_embree_linux.sh` (Docker) |
+| `lib/linux/arm64`, `lib/linux/aarch64` | 64-bit ARM NEON: ARM desktops and servers, and 64-bit Raspberry Pi OS (the same build) | `scripts/build_embree_linux.sh arm64` |
 
-The Linux folders use openFrameworks' `lib/linux/<arch>` layout (0.12.2 and later). Embree's static
-library allows one code path per architecture with Apple's clang, hence AVX2 only for Intel Macs. Windows
-isn't included yet.
+- The Linux folders use openFrameworks' `lib/linux/<arch>` layout (0.12.2 and later), built with `-fPIC`.
+- On macOS, `osx` links the xcframework's macOS slice; on iOS the projectGenerator adds the xcframework.
+- Embree's static library allows one code path per architecture with Apple's clang, hence AVX2 only on
+  Intel Macs. Under Rosetta, run with `ROSETTA_ADVERTISE_AVX=1` so Embree sees AVX2.
+- Embree doesn't target iOS officially; `build_embree_apple.sh` notes the two changes it makes.
+- Windows isn't included yet.
 
 ## License
 

@@ -16,7 +16,7 @@ ADDON=$(cd "$(dirname "$0")/.." && pwd)
 
 for arch in ${*:-amd64 arm64}; do
 	case $arch in
-		amd64) dirs="linux/64"; isa="-DEMBREE_MAX_ISA=NONE -DEMBREE_ISA_SSE2=ON -DEMBREE_ISA_SSE42=OFF -DEMBREE_ISA_AVX=OFF -DEMBREE_ISA_AVX2=ON -DEMBREE_ISA_AVX512=OFF" ;;
+		amd64) dirs="linux/64"; isa="-DEMBREE_MAX_ISA=NONE -DEMBREE_ISA_SSE2=ON -DEMBREE_ISA_SSE42=OFF -DEMBREE_ISA_AVX=ON -DEMBREE_ISA_AVX2=ON -DEMBREE_ISA_AVX512=OFF" ;;
 		arm64) dirs="linux/arm64 linux/aarch64"; isa="" ;;
 		*) echo "unknown arch: $arch (amd64 or arm64)" >&2; exit 1 ;;
 	esac

@@ -12,14 +12,14 @@ common:
 	ADDON_INCLUDES_EXCLUDE = libs/embree/include/embree4
 
 osx:
-	# Embree static, universal (arm64 + x86_64), no TBB (scripts/build_embree_macos.sh)
-	ADDON_LIBS = libs/embree/lib/osx/libembree4.a
-	ADDON_LIBS += libs/embree/lib/osx/libembree_avx2.a
-	ADDON_LIBS += libs/embree/lib/osx/libsys.a
-	ADDON_LIBS += libs/embree/lib/osx/libmath.a
-	ADDON_LIBS += libs/embree/lib/osx/libsimd.a
-	ADDON_LIBS += libs/embree/lib/osx/liblexers.a
-	ADDON_LIBS += libs/embree/lib/osx/libtasking.a
+	# the macOS slice of embree.xcframework: universal (arm64 + x86_64), 10.15+
+	# (scripts/build_embree_apple.sh)
+	ADDON_LIBS = libs/embree/lib/macos/embree.xcframework/macos-arm64_x86_64/libembree.a
+
+ios:
+	# iOS 15+ and the Simulator
+	ADDON_LIBS =
+	ADDON_XCFRAMEWORKS = libs/embree/lib/macos/embree.xcframework
 
 # Linux (openFrameworks 0.12.2+ layout: lib/linux/<arch>): static, -fPIC, no TBB,
 # Embree's libraries merged into one libembree.a (scripts/build_embree_linux.sh):
